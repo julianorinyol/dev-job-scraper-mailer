@@ -3,11 +3,16 @@ require 'pry'
 require "active_record"
 require 'nokogiri'
 require 'open-uri'
+# require 'httparty'
+
+
 require_relative './email_config.rb'
 require_relative './database_config.rb'
 require_relative './job_posting.rb'
 
+
 doc = Nokogiri::HTML(open("http://vancouver.craigslist.ca/search/sof"))
+# doc = Nokogiri::HTML(HTTParty.get("http://vancouver.craigslist.ca/search/sof"))
 
 JobPosting.destroy_all
 
@@ -17,7 +22,6 @@ range = start_time..end_time
 posts_from_range = []
 
 rows = doc.css(".row")
-
 rows.each_with_index do |row, index|
   date_posted = row.children.css(".pl").children[1].attributes["datetime"].value
 
@@ -62,6 +66,5 @@ end
 
   FOO
 end
-
 subject = "Job postings from:  #{Date.today.strftime("%A")}"
 send_email ENV["recipient"], subject, body
